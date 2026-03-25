@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { CartProvider } from "@/context/CartContext";
 import Navbar from "@/components/Navbar";
+import ChatBot from "@/components/ChatBot";
 import Index from "./pages/Index";
 import MenuPage from "./pages/MenuPage";
 import CartPage from "./pages/CartPage";
@@ -24,6 +25,7 @@ const App = () => (
             <Route path="/cart" element={<CartPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <ChatBot />
         </BrowserRouter>
       </CartProvider>
     </TooltipProvider>
