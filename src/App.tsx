@@ -23,10 +23,9 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/menu" element={<MenuPage />} />
             <Route path="/cart" element={<CartPage />} />
-          <Route path="*" element={<NotFound />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
           <ChatBot />
-          </Routes>
         </BrowserRouter>
       </CartProvider>
     </TooltipProvider>
