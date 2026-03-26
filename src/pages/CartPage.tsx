@@ -1,15 +1,17 @@
 import { useCart } from "@/context/CartContext";
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
 
 const CartPage = () => {
   const { items, updateQuantity, removeItem, clearCart, totalPrice } = useCart();
+  const navigate = useNavigate();
 
   const handleCheckout = () => {
-    toast.success("Order placed successfully! 🎉");
+    toast.success("Order placed! Tracking your delivery... 🚴");
     clearCart();
+    navigate("/order-tracking");
   };
 
   if (items.length === 0) {
