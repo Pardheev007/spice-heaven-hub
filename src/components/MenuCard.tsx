@@ -37,7 +37,7 @@ const MenuCard = ({ item }: { item: MenuItem }) => {
       <div className="p-4">
         <div className="flex items-start justify-between mb-1">
           <h3 className="font-display text-lg font-semibold text-foreground">{item.name}</h3>
-          <span className="font-body font-bold text-primary text-lg">${item.price.toFixed(2)}</span>
+          <span className="font-body font-bold text-primary text-lg">₹{item.price}</span>
         </div>
 
         <p className="font-body text-sm text-muted-foreground mb-3 line-clamp-2">{item.description}</p>
