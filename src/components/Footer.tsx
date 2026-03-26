@@ -5,9 +5,9 @@ const Footer = () => (
     <div className="container mx-auto px-4">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
         <div>
-          <h3 className="font-display text-2xl font-bold text-gradient-warm mb-4">Spice Heaven</h3>
+          <h3 className="font-display text-2xl font-bold text-gradient-warm mb-4">Spice Heaven<span className="text-primary">+</span></h3>
           <p className="font-body text-sm text-cream/70 leading-relaxed">
-            Bringing the rich, authentic flavors of India to your table since 2010. Every dish is crafted with love and tradition.
+            Your favourite Indian restaurants, delivered fast with A* optimized routes. Experience authentic flavors from multiple kitchens.
           </p>
         </div>
         <div>
@@ -22,14 +22,14 @@ const Footer = () => (
           <h4 className="font-display text-lg font-semibold text-gold mb-4">Quick Links</h4>
           <div className="space-y-2 font-body text-sm text-cream/70">
             <p className="hover:text-primary cursor-pointer transition-colors">About Us</p>
-            <p className="hover:text-primary cursor-pointer transition-colors">Catering</p>
-            <p className="hover:text-primary cursor-pointer transition-colors">Gift Cards</p>
+            <p className="hover:text-primary cursor-pointer transition-colors">Partner with Us</p>
+            <p className="hover:text-primary cursor-pointer transition-colors">Careers</p>
             <p className="hover:text-primary cursor-pointer transition-colors">Privacy Policy</p>
           </div>
         </div>
       </div>
       <div className="border-t border-cream/10 mt-10 pt-6 text-center font-body text-xs text-cream/40">
-        © 2026 Spice Heaven. All rights reserved.
+        © 2026 Spice Heaven+. All rights reserved. Route optimization powered by A* algorithm.
       </div>
     </div>
   </footer>

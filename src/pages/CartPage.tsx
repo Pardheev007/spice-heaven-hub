@@ -1,16 +1,15 @@
 import { useCart } from "@/context/CartContext";
-import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingBag, MapPin } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
 
 const CartPage = () => {
-  const { items, updateQuantity, removeItem, clearCart, totalPrice } = useCart();
+  const { items, restaurant, updateQuantity, removeItem, clearCart, totalPrice } = useCart();
   const navigate = useNavigate();
 
   const handleCheckout = () => {
     toast.success("Order placed! Tracking your delivery... 🚴");
-    clearCart();
     navigate("/order-tracking");
   };
 
@@ -22,10 +21,10 @@ const CartPage = () => {
           <h2 className="font-display text-3xl font-bold text-foreground mb-2">Your cart is empty</h2>
           <p className="font-body text-muted-foreground mb-8">Add some delicious dishes to get started!</p>
           <Link
-            to="/menu"
+            to="/restaurants"
             className="bg-gradient-warm text-primary-foreground font-body font-bold px-8 py-3 rounded-full hover:scale-105 transition-transform"
           >
-            Browse Menu
+            Browse Restaurants
           </Link>
         </div>
         <Footer />
@@ -35,8 +34,14 @@ const CartPage = () => {
 
   return (
     <main className="pt-16">
-      <div className="bg-dark-wood py-16 text-center">
-        <h1 className="font-display text-4xl md:text-5xl font-bold text-cream">Your Cart</h1>
+      <div className="bg-dark-wood py-12 text-center">
+        <h1 className="font-display text-3xl md:text-4xl font-bold text-cream">Your Cart</h1>
+        {restaurant && (
+          <div className="flex items-center justify-center gap-1.5 mt-2">
+            <MapPin className="w-4 h-4 text-primary" />
+            <span className="font-body text-sm text-cream/70">Ordering from {restaurant.name}</span>
+          </div>
+        )}
         <div className="w-20 h-1 bg-gradient-warm mx-auto mt-4 rounded-full" />
       </div>
 
@@ -96,9 +101,25 @@ const CartPage = () => {
 
           {/* Summary */}
           <div className="mt-8 bg-card p-6 rounded-lg shadow-[var(--shadow-card)]">
-            <div className="flex justify-between items-center mb-6">
+            <div className="space-y-2 mb-4 font-body text-sm text-muted-foreground">
+              <div className="flex justify-between">
+                <span>Subtotal</span>
+                <span>₹{totalPrice}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Delivery Fee</span>
+                <span>₹49</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Taxes</span>
+                <span>₹{Math.round(totalPrice * 0.05)}</span>
+              </div>
+            </div>
+            <div className="border-t border-border pt-4 flex justify-between items-center mb-6">
               <span className="font-display text-2xl font-bold text-foreground">Total</span>
-              <span className="font-display text-3xl font-bold text-primary">₹{totalPrice}</span>
+              <span className="font-display text-3xl font-bold text-primary">
+                ₹{totalPrice + 49 + Math.round(totalPrice * 0.05)}
+              </span>
             </div>
             <button
               onClick={handleCheckout}

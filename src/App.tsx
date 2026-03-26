@@ -9,6 +9,8 @@ import Index from "./pages/Index";
 import MenuPage from "./pages/MenuPage";
 import CartPage from "./pages/CartPage";
 import OrderTrackingPage from "./pages/OrderTrackingPage";
+import RestaurantsPage from "./pages/RestaurantsPage";
+import RestaurantMenuPage from "./pages/RestaurantMenuPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +24,8 @@ const App = () => (
           <Navbar />
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/restaurants" element={<RestaurantsPage />} />
+            <Route path="/restaurant/:id" element={<RestaurantMenuPage />} />
             <Route path="/menu" element={<MenuPage />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/order-tracking" element={<OrderTrackingPage />} />
