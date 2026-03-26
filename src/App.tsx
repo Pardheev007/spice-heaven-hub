@@ -8,6 +8,7 @@ import ChatBot from "@/components/ChatBot";
 import Index from "./pages/Index";
 import MenuPage from "./pages/MenuPage";
 import CartPage from "./pages/CartPage";
+import DeliveryRoutePage from "./pages/DeliveryRoutePage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,6 +24,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/menu" element={<MenuPage />} />
             <Route path="/cart" element={<CartPage />} />
+            <Route path="/delivery-route" element={<DeliveryRoutePage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <ChatBot />
