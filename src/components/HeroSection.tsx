@@ -24,16 +24,16 @@ const HeroSection = () => {
           className="font-display text-5xl md:text-7xl lg:text-8xl font-bold text-cream mb-6 opacity-0 animate-fade-up"
           style={{ animationDelay: "0.4s" }}
         >
-          Spice Heaven
+          Spice Heaven<span className="text-primary">+</span>
         </h1>
         <p
           className="font-display text-xl md:text-2xl italic text-gold/90 mb-10 opacity-0 animate-fade-up"
           style={{ animationDelay: "0.6s" }}
         >
-          Authentic Indian Flavors
+          Authentic Indian Flavors, Delivered to Your Door
         </p>
         <Link
-          to="/menu"
+          to="/restaurants"
           className="inline-block bg-gradient-warm text-primary-foreground font-body font-bold text-lg px-10 py-4 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 opacity-0 animate-fade-up"
           style={{ animationDelay: "0.8s" }}
         >
@@ -41,7 +41,6 @@ const HeroSection = () => {
         </Link>
       </div>
 
-      {/* Scroll hint */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 opacity-0 animate-fade-up" style={{ animationDelay: "1.2s" }}>
         <div className="w-6 h-10 border-2 border-cream/40 rounded-full flex justify-center pt-2">
           <div className="w-1 h-3 bg-cream/60 rounded-full animate-bounce" />

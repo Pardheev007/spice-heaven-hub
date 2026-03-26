@@ -2,12 +2,22 @@ import { Star, Flame, Plus } from "lucide-react";
 import type { MenuItem } from "@/data/menuData";
 import { useCart } from "@/context/CartContext";
 import { toast } from "sonner";
+import { useParams } from "react-router-dom";
+import { restaurants } from "@/data/restaurants";
 
 const MenuCard = ({ item }: { item: MenuItem }) => {
-  const { addItem } = useCart();
+  const { addItem, restaurant: cartRestaurant } = useCart();
+  const { id: routeId } = useParams<{ id: string }>();
 
   const handleAdd = () => {
-    addItem(item);
+    // Find the restaurant context
+    const restaurant = restaurants.find((r) => r.id === routeId) ?? restaurants[0];
+
+    if (cartRestaurant && cartRestaurant.id !== restaurant.id) {
+      toast.info(`Switched to ${restaurant.name}. Previous items cleared.`);
+    }
+
+    addItem(item, restaurant);
     toast.success(`${item.name} added to cart!`);
   };
 
