@@ -56,7 +56,7 @@ const CartPage = () => {
                 />
                 <div className="flex-1 min-w-0">
                   <h3 className="font-display font-semibold text-foreground truncate">{item.name}</h3>
-                  <p className="font-body text-sm text-muted-foreground">${item.price.toFixed(2)} each</p>
+                  <p className="font-body text-sm text-muted-foreground">₹{item.price} each</p>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -76,7 +76,7 @@ const CartPage = () => {
                 </div>
 
                 <p className="font-body font-bold text-primary w-20 text-right">
-                  ${(item.price * item.quantity).toFixed(2)}
+                  ₹{item.price * item.quantity}
                 </p>
 
                 <button
@@ -96,7 +96,7 @@ const CartPage = () => {
           <div className="mt-8 bg-card p-6 rounded-lg shadow-[var(--shadow-card)]">
             <div className="flex justify-between items-center mb-6">
               <span className="font-display text-2xl font-bold text-foreground">Total</span>
-              <span className="font-display text-3xl font-bold text-primary">${totalPrice.toFixed(2)}</span>
+              <span className="font-display text-3xl font-bold text-primary">₹{totalPrice}</span>
             </div>
             <button
               onClick={handleCheckout}

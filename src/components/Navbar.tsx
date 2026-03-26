@@ -11,6 +11,7 @@ const Navbar = () => {
   const links = [
     { to: "/", label: "Home" },
     { to: "/menu", label: "Menu" },
+    { to: "/delivery-route", label: "Route Optimizer" },
     { to: "/cart", label: "Cart" },
   ];
 
