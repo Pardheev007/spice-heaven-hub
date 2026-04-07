@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { CheckCircle, Clock, MapPin, Navigation, Bike, UtensilsCrossed } from "lucide-react";
 import Footer from "@/components/Footer";
@@ -18,8 +18,12 @@ type OrderPhase = "preparing" | "calculating" | "delivering" | "delivered";
 
 const OrderTrackingPage = () => {
   const { restaurant, clearCart } = useCart();
-  const restaurantLocation: Point = restaurant?.location ?? { r: 2, c: 3 };
   const customerLocation: Point = USER_HOME;
+
+  // Capture restaurant location once on mount to avoid re-render loops
+  const restaurantLocationRef = useRef<Point>(restaurant?.location ?? { r: 2, c: 3 });
+  const clearCartRef = useRef(clearCart);
+  clearCartRef.current = clearCart;
 
   const [grid, setGrid] = useState<CellType[][]>([]);
   const [phase, setPhase] = useState<OrderPhase>("preparing");
@@ -28,92 +32,103 @@ const OrderTrackingPage = () => {
   const [pathLength, setPathLength] = useState(0);
   const [prepCountdown, setPrepCountdown] = useState(5);
 
-  const initRoute = useCallback(async () => {
-    // Preparing phase countdown
-    setPhase("preparing");
-    for (let i = 5; i > 0; i--) {
-      setPrepCountdown(i);
-      await new Promise((r) => setTimeout(r, 800));
-    }
-
-    setPhase("calculating");
-
-    const walls = generateObstacles(restaurantLocation, customerLocation, 0.22);
-    let result = findRoute(restaurantLocation, customerLocation, walls);
-
-    if (!result.found) {
-      const walls2 = generateObstacles(restaurantLocation, customerLocation, 0.12);
-      result = findRoute(restaurantLocation, customerLocation, walls2);
-      if (!result.found) return;
-    }
-
-    const g: CellType[][] = Array.from({ length: GRID_ROWS }, () =>
-      Array(GRID_COLS).fill("empty") as CellType[]
-    );
-    (result.found ? walls : new Set<string>()).forEach((k) => {
-      const [r, c] = k.split(",").map(Number);
-      g[r][c] = "wall";
-    });
-    g[restaurantLocation.r][restaurantLocation.c] = "start";
-    g[customerLocation.r][customerLocation.c] = "end";
-    setGrid(g.map((row) => [...row]));
-
-    const estimatedMinutes = Math.max(15, Math.round(result.distance * 1.2));
-    setEta(estimatedMinutes);
-    setPathLength(result.distance);
-
-    // Animate exploration
-    for (let i = 0; i < result.visited.length; i++) {
-      const [vr, vc] = result.visited[i];
-      setGrid((prev) => {
-        const ng = prev.map((row) => [...row]);
-        ng[vr][vc] = "visited";
-        return ng;
-      });
-      if (i % 5 === 0) await new Promise((r) => setTimeout(r, 8));
-    }
-
-    // Show path
-    for (let i = 0; i < result.path.length; i++) {
-      const [pr, pc] = result.path[i];
-      setGrid((prev) => {
-        const ng = prev.map((row) => [...row]);
-        ng[pr][pc] = "path";
-        return ng;
-      });
-      await new Promise((r) => setTimeout(r, 20));
-    }
-
-    setPhase("delivering");
-
-    // Animate rider
-    const fullPath: [number, number][] = [
-      [restaurantLocation.r, restaurantLocation.c],
-      ...result.path,
-      [customerLocation.r, customerLocation.c],
-    ];
-    for (let i = 0; i < fullPath.length; i++) {
-      const [rr, rc] = fullPath[i];
-      setGrid((prev) => {
-        const ng = prev.map((row) => [...row]);
-        if (i > 0) {
-          const [pr, pc] = fullPath[i - 1];
-          ng[pr][pc] = i - 1 === 0 ? "start" : "path";
-        }
-        ng[rr][rc] = "rider";
-        return ng;
-      });
-      setProgress(Math.round((i / (fullPath.length - 1)) * 100));
-      await new Promise((r) => setTimeout(r, 80));
-    }
-
-    setPhase("delivered");
-    clearCart();
-  }, [restaurantLocation, customerLocation, clearCart]);
-
   useEffect(() => {
-    initRoute();
-  }, [initRoute]);
+    let cancelled = false;
+    const restaurantLocation = restaurantLocationRef.current;
+
+    const run = async () => {
+      // Preparing phase countdown
+      setPhase("preparing");
+      for (let i = 5; i > 0; i--) {
+        if (cancelled) return;
+        setPrepCountdown(i);
+        await new Promise((r) => setTimeout(r, 800));
+      }
+
+      if (cancelled) return;
+      setPhase("calculating");
+
+      const walls = generateObstacles(restaurantLocation, customerLocation, 0.22);
+      let result = findRoute(restaurantLocation, customerLocation, walls);
+
+      if (!result.found) {
+        const walls2 = generateObstacles(restaurantLocation, customerLocation, 0.12);
+        result = findRoute(restaurantLocation, customerLocation, walls2);
+        if (!result.found) return;
+      }
+
+      const g: CellType[][] = Array.from({ length: GRID_ROWS }, () =>
+        Array(GRID_COLS).fill("empty") as CellType[]
+      );
+      (result.found ? walls : new Set<string>()).forEach((k) => {
+        const [r, c] = k.split(",").map(Number);
+        g[r][c] = "wall";
+      });
+      g[restaurantLocation.r][restaurantLocation.c] = "start";
+      g[customerLocation.r][customerLocation.c] = "end";
+      setGrid(g.map((row) => [...row]));
+
+      const estimatedMinutes = Math.max(15, Math.round(result.distance * 1.2));
+      setEta(estimatedMinutes);
+      setPathLength(result.distance);
+
+      // Animate exploration
+      for (let i = 0; i < result.visited.length; i++) {
+        if (cancelled) return;
+        const [vr, vc] = result.visited[i];
+        setGrid((prev) => {
+          const ng = prev.map((row) => [...row]);
+          ng[vr][vc] = "visited";
+          return ng;
+        });
+        if (i % 5 === 0) await new Promise((r) => setTimeout(r, 8));
+      }
+
+      // Show path
+      for (let i = 0; i < result.path.length; i++) {
+        if (cancelled) return;
+        const [pr, pc] = result.path[i];
+        setGrid((prev) => {
+          const ng = prev.map((row) => [...row]);
+          ng[pr][pc] = "path";
+          return ng;
+        });
+        await new Promise((r) => setTimeout(r, 20));
+      }
+
+      if (cancelled) return;
+      setPhase("delivering");
+
+      // Animate rider
+      const fullPath: [number, number][] = [
+        [restaurantLocation.r, restaurantLocation.c],
+        ...result.path,
+        [customerLocation.r, customerLocation.c],
+      ];
+      for (let i = 0; i < fullPath.length; i++) {
+        if (cancelled) return;
+        const [rr, rc] = fullPath[i];
+        setGrid((prev) => {
+          const ng = prev.map((row) => [...row]);
+          if (i > 0) {
+            const [pr, pc] = fullPath[i - 1];
+            ng[pr][pc] = i - 1 === 0 ? "start" : "path";
+          }
+          ng[rr][rc] = "rider";
+          return ng;
+        });
+        setProgress(Math.round((i / (fullPath.length - 1)) * 100));
+        await new Promise((r) => setTimeout(r, 80));
+      }
+
+      if (cancelled) return;
+      setPhase("delivered");
+      clearCartRef.current();
+    };
+
+    run();
+    return () => { cancelled = true; };
+  }, [customerLocation]);
 
   const cellColor = (type: CellType) => {
     switch (type) {
